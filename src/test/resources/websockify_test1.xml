@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ConnectorSet>
+	<Connector mode="local" protocol="HTTP/1.1" ip="127.0.0.1"
+		port="8085" path="/vnc/vnc_auto.html" SSLEnabled="false" minPort="10900" maxPort="11900" />
+	<Connector mode="remote" protocol="HTTP/1.1" ip="127.0.0.1"
+		port="8086" SSLEnabled="false" username="admin" password="1111" />
+</ConnectorSet>

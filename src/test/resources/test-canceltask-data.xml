@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+<TASKEVENT id="1" cmd="testing" config="mock" para="" registerdate="2014-11-10 16:50:39.585000" optlock="0" userid="1"/>
+<TASKEVENT id="2" cmd="testing" config="mock" para="" registerdate="2014-11-10 16:50:39.585000" optlock="0" userid="1"/>
+<TASKEVENTLOG id="1" logdate="2014-11-10 16:50:39.585000" message="testing" status="4" optlock="0" eventid="1"/>
+<TASKEVENTLOG id="2" logdate="2014-11-10 16:50:39.585000" message="testing" status="4" optlock="0" eventid="2"/>
+<JOB id="1" createdate="1" distributedkey="testing" eventid="1" key="key" start="false" uuid="uuid" optlock="0" />
+<JOB id="2" createdate="1" distributedkey="testing" eventid="2" key="key" start="false" uuid="uuid" optlock="0" />
+</dataset>

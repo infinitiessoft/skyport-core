@@ -1,0 +1,93 @@
+<!-- ~ Hibernate, Relational Persistence for Idiomatic Java ~ ~ Copyright 
+	(c) 2010, Red Hat Inc. or third-party contributors as ~ indicated by the 
+	@author tags or express copyright attribution ~ statements applied by the 
+	authors. All third-party contributions are ~ distributed under license by 
+	Red Hat Inc. ~ ~ This copyrighted material is made available to anyone wishing 
+	to use, modify, ~ copy, or redistribute it subject to the terms and conditions 
+	of the GNU ~ Lesser General Public License, as published by the Free Software 
+	Foundation. ~ ~ This program is distributed in the hope that it will be useful, 
+	~ but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
+	~ or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public 
+	License ~ for more details. ~ ~ You should have received a copy of the GNU 
+	Lesser General Public License ~ along with this distribution; if not, write 
+	to: ~ Free Software Foundation, Inc. ~ 51 Franklin Street, Fifth Floor ~ 
+	Boston, MA 02110-1301 USA -->
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+	version="2.0">
+
+	<persistence-unit name="com.infinities.skyport.jpa"
+		transaction-type="RESOURCE_LOCAL">
+		<description>
+            Persistence unit for Skyport
+        </description>
+		<class>com.infinities.skyport.entity.User</class>
+		<class>com.infinities.skyport.entity.Role</class>
+		<class>com.infinities.skyport.entity.Session</class>
+		<class>com.infinities.skyport.entity.RolePermission</class>
+		<class>com.infinities.skyport.entity.TaskEvent</class>
+		<class>com.infinities.skyport.entity.TaskEventLog</class>
+		<class>com.infinities.skyport.entity.UserRole</class>
+		<class>com.infinities.skyport.entity.PermissionOperation</class>
+		<class>com.infinities.skyport.entity.Scope</class>
+		<class>com.infinities.skyport.entity.Organization</class>
+		<!-- <class>com.infinities.skyport.entity.Job</class> -->
+		<!-- <class>com.infinities.skyport.server.entity.Server</class> -->
+		<!-- <class>com.infinities.skyport.db.entity.PermissionObject</class> <class>com.infinities.skyport.db.entity.Operation</class> -->
+		<!-- <class>com.infinities.skyport.db.entity.UserGroup</class> <class>com.infinities.skyport.db.entity.UserUserGroup</class> 
+			<class>com.infinities.skyport.db.entity.RoleUserGroup</class> -->
+		<!-- <class>com.infinities.skyport.db.entity.RoleOrganization</class> <class>com.infinities.skyport.db.entity.OrganizationPermission</class> 
+			<class>com.infinities.skyport.db.entity.RoleOrganizationPermission</class> -->
+		<properties>
+			<!-- <property name="hibernate.connection.provider_class" value="com.infinities.skyport.db.home.ProxoolConnectionProvider"/> 
+				<property name="hibernate.proxool.pool_alias" value="proxool" /> <property 
+				name="hibernate.proxool.existing_pool" value="false" /> <property name="hibernate.proxool.url" 
+				value="jdbc:hsqldb:file:./db/skyportDB;DB_CLOSE_DELAY=-1;MVCC=TRUE" /> <property 
+				name="hibernate.proxool.xml" value="./proxool.xml" /> -->
+
+			<!-- <property name="hibernate.connection.provider_class" value="com.infinities.skyport.db.home.DBCPConnectionProvider" 
+				/> <property name="hibernate.dbcp.initialSize" value="10" /> <property name="hibernate.dbcp.maxActive" 
+				value="20" /> <property name="hibernate.dbcp.maxIdle" value="20" /> <property 
+				name="hibernate.dbcp.minIdle" value="10" /> -->
+
+			<property name="hibernate.connection.provider_class"
+				value="com.infinities.skyport.jpa.provider.BoneCPConnectionProvider" />
+			<property name="bonecp.idleMaxAgeInMinutes" value="5" />
+			<property name="bonecp.idleConnectionTestPeriodInMinutes"
+				value="1" />
+			<property name="bonecp.partitionCount" value="3" />
+			<property name="bonecp.acquireIncrement" value="3" />
+			<property name="bonecp.maxConnectionsPerPartition" value="20" />
+			<property name="bonecp.minConnectionsPerPartition" value="1" />
+			<property name="bonecp.statementsCacheSize" value="50" />
+			<property name="bonecp.releaseHelperThreads" value="3" />
+			<property name="bonecp.acquireRetryAttempts" value="5" />
+			<property name="bonecp.acquireRetryDelayInMs" value="500" />
+
+			<!-- <property name="hibernate.connection.url" value="jdbc:hsqldb:file:./db/skyportDB;DB_CLOSE_DELAY=-1;MVCC=TRUE" 
+				/> -->
+			<!-- <property name="hibernate.proxool.properties" value="proxool.properties" 
+				/> -->
+			<property name="javax.persistence.jdbc.driver" value="org.hsqldb.jdbc.JDBCDriver" />
+			<property name="javax.persistence.jdbc.url"
+				value="jdbc:hsqldb:file:./db/skyportDB;DB_CLOSE_DELAY=-1;MVCC=TRUE" />
+			<property name="javax.persistence.jdbc.user" value="sa" />
+			<property name="javax.persistence.jdbc.password" value="" />
+			<property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect" />
+			<!-- <property name="hibernate.show_sql" value="true" /> -->
+			<property name="current_session_context_class" value="thread" />
+			<property name="hibernate.max_fetch_depth" value="3" />
+
+			<!-- <property name="hibernate.c3p0.min_size" value="5" /> <property name="hibernate.c3p0.max_size" 
+				value="20" /> <property name="hibernate.c3p0.timeout" value="1800" /> <property 
+				name="hibernate.c3p0.max_statements" value="50" /> -->
+
+			<property name="hibernate.show_sql" value="true" />
+			<property name="hibernate.hbm2ddl.auto" value="update" />
+
+		</properties>
+
+
+	</persistence-unit>
+</persistence>

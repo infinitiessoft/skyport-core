@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory name="Skyport">
+        <property name="hibernate.bytecode.use_reflection_optimizer">false</property>
+        <property name="hibernate.connection.driver_class">org.hsqldb.jdbcDriver</property>
+        <property name="hibernate.connection.url">jdbc:hsqldb:file:./db/skyportDB</property>
+        <property name="hibernate.connection.username">sa</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.HSQLDialect</property>
+        <property name="hibernate.search.autoregister_listeners">false</property>
+        <!-- <property name="hibernate.proxool.existing_pool">true</property>
+		<property name="hibernate.proxool.xml">proxool2.xml</property>
+		<property name="hibernate.proxool.pool_alias">/Users/pohsun/SkyportWorkspace/skyport/proxool2.xml</property>
+         -->
+        <!-- <mapping class="com.infinities.skyport.entity.User" />
+        <mapping class="com.infinities.skyport.entity.Role" />
+        <mapping class="com.infinities.skyport.entity.Session" />
+        <mapping class="com.infinities.skyport.entity.RolePermission" />
+        <mapping class="com.infinities.skyport.entity.TaskEvent" />
+        <mapping class="com.infinities.skyport.entity.TaskEventLog" />
+        <mapping class="com.infinities.skyport.entity.Template" />
+        <mapping class="com.infinities.skyport.entity.Vm" />
+        <mapping class="com.infinities.skyport.entity.VmAgent" />
+        <mapping class="com.infinities.skyport.entity.Disk" />
+        <mapping class="com.infinities.skyport.entity.Nic" />
+        <mapping class="com.infinities.skyport.entity.UserRole" />
+        <mapping class="com.infinities.skyport.entity.Log" />
+        <mapping class="com.infinities.skyport.entity.Host" />
+        <mapping class="com.infinities.skyport.entity.PermissionOperation" /> -->
+        <!-- <mapping class="com.infinities.skyport.entity.PermissionObject" />
+        <mapping class="com.infinities.skyport.entity.Operation" />
+         -->
+        <!-- <mapping class="com.infinities.skyport.entity.Scope" />
+        <mapping class="com.infinities.skyport.entity.ResourcePool" /> -->
+        <!-- <mapping class="com.infinities.skyport.entity.UserGroup" />
+        <mapping class="com.infinities.skyport.entity.UserUserGroup" />
+        <mapping class="com.infinities.skyport.entity.RoleUserGroup" /> -->
+        <!-- <mapping class="com.infinities.skyport.entity.Organization" /> -->
+        <!-- <mapping class="com.infinities.skyport.entity.RoleOrganization" />
+        <mapping class="com.infinities.skyport.entity.OrganizationPermission" />
+        <mapping class="com.infinities.skyport.entity.RoleOrganizationPermission" /> -->
+    </session-factory>
+</hibernate-configuration>

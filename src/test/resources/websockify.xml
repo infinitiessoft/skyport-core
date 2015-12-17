@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ConnectorSet>
+	<Connector mode="local" protocol="HTTP/1.1" ip="127.0.0.1"
+		port="8085" path="/vnc/vnc_auto.html" SSLEnabled="true" keystoreType="PKCS12"
+		keystoreFile="${user.dir}/config/skyport_keystore.p12" keystorePass="changeit"
+		minPort="10900" maxPort="11900" />
+	<Connector mode="local" protocol="HTTP/1.1" ip="127.0.0.2"
+		port="8085" path="/vnc/vnc_auto.html" SSLEnabled="false" keystoreType="PKCS12"
+		keystoreFile="${user.dir}/config/skyport_keystore.p12" keystorePass="changeit"
+		minPort="10900" maxPort="11900" />
+	<Connector mode="remote" protocol="HTTP/1.1" ip="127.0.0.3"
+		port="8443" SSLEnabled="true" username="admin" password="1111" />
+</ConnectorSet>
