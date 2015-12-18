@@ -21,8 +21,19 @@ import com.infinities.skyport.async.AsyncServiceProvider;
 import com.infinities.skyport.model.configuration.Configuration;
 import com.infinities.skyport.service.ConfigurationHome;
 
-public class AsyncServiceProviderFactory {
+public class AsyncServiceProviderFactory implements IAsyncServiceProviderFactory {
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.infinities.skyport.async.impl.IAsyncServiceProviderFactory#getInstance
+	 * (com.infinities.skyport.service.ConfigurationHome,
+	 * com.infinities.skyport.ServiceProvider,
+	 * com.infinities.skyport.model.configuration.Configuration,
+	 * com.google.common.util.concurrent.ListeningScheduledExecutorService)
+	 */
+	@Override
 	public AsyncServiceProvider getInstance(ConfigurationHome configurationHome, ServiceProvider provider,
 			Configuration configuration, ListeningScheduledExecutorService scheduler) throws Exception {
 		AsyncServiceProviderImpl proxy = new AsyncServiceProviderImpl(provider, configuration, scheduler);

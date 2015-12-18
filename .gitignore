@@ -23,7 +23,9 @@ target/
 /skyport-core/db/
 /skyport-core/META-INF/persistence.xml
 /nova2.0-api/db/
+db/
 ### Manifest ###
+MANIFEST.MF
 ##META-INF
 
 ### JKS ###

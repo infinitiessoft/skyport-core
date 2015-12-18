@@ -63,12 +63,12 @@ public class DriverHomeImplTest {
 	@Test
 	public void testFindAll() {
 		Map<String, Class<? extends ServiceProvider>> map = home.findAll();
-		assertEquals(18, map.size());
+		assertEquals(1, map.size());
 	}
 
 	@Test
 	public void testFindByName() {
-		String className = "com.infinities.skyport.VcloudServiceProvider";
+		String className = "com.infinities.skyport.MockServiceProvider";
 		Class<? extends ServiceProvider> serverProvider = home.findByName(className);
 		assertEquals(className, serverProvider.getName());
 	}

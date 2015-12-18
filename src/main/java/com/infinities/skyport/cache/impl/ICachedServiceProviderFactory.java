@@ -21,26 +21,13 @@ import com.infinities.skyport.async.AsyncServiceProvider;
 import com.infinities.skyport.cache.CachedServiceProvider;
 import com.infinities.skyport.service.ConfigurationHome;
 
-public class CachedServiceProviderFactory implements ICachedServiceProviderFactory {
+/**
+ * @author pohsun
+ *
+ */
+public interface ICachedServiceProviderFactory {
 
-	public CachedServiceProviderFactory() {
-	}
+	CachedServiceProvider getInstance(ConfigurationHome home, AsyncServiceProvider serviceProvider,
+			ListeningScheduledExecutorService scheduler, ListeningExecutorService worker) throws Exception;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.infinities.skyport.cache.impl.ICachedServiceProviderFactory#getInstance
-	 * (com.infinities.skyport.service.ConfigurationHome,
-	 * com.infinities.skyport.async.AsyncServiceProvider,
-	 * com.google.common.util.concurrent.ListeningScheduledExecutorService,
-	 * com.google.common.util.concurrent.ListeningExecutorService)
-	 */
-	@Override
-	public CachedServiceProvider getInstance(ConfigurationHome home, AsyncServiceProvider serviceProvider,
-			ListeningScheduledExecutorService scheduler, ListeningExecutorService worker) throws Exception {
-		CachedServiceProviderImpl cachedServiceProvider = new CachedServiceProviderImpl(home, serviceProvider, scheduler,
-				worker);
-		return cachedServiceProvider;
-	}
 }

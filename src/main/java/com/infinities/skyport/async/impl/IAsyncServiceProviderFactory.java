@@ -13,21 +13,21 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  *******************************************************************************/
-package com.infinities.skyport.registrar;
+package com.infinities.skyport.async.impl;
 
-import org.glassfish.hk2.api.Factory;
-
+import com.google.common.util.concurrent.ListeningScheduledExecutorService;
+import com.infinities.skyport.ServiceProvider;
+import com.infinities.skyport.async.AsyncServiceProvider;
+import com.infinities.skyport.model.configuration.Configuration;
 import com.infinities.skyport.service.ConfigurationHome;
 
-public class ConfigurationHomeH2Factory implements Factory<ConfigurationHome> {
+/**
+ * @author pohsun
+ *
+ */
+public interface IAsyncServiceProviderFactory {
 
-	@Override
-	public ConfigurationHome provide() {
-		return ConfigurationHomeFactory.getInstance();
-	}
+	AsyncServiceProvider getInstance(ConfigurationHome configurationHome, ServiceProvider provider,
+			Configuration configuration, ListeningScheduledExecutorService scheduler) throws Exception;
 
-	@Override
-	public void dispose(ConfigurationHome instance) {
-
-	}
 }

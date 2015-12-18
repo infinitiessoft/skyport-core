@@ -19,13 +19,25 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import com.infinities.skyport.async.AsyncServiceProvider;
 import com.infinities.skyport.cache.CachedServiceProvider;
+import com.infinities.skyport.service.ConfigurationHome;
 
-public class DelegatedServiceProviderFactory {
+public class DelegatedServiceProviderFactory implements ICachedServiceProviderFactory {
 
 	public DelegatedServiceProviderFactory() {
 	}
 
-	public CachedServiceProvider getInstance(AsyncServiceProvider serviceProvider,
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.infinities.skyport.cache.impl.ICachedServiceProviderFactory#getInstance
+	 * (com.infinities.skyport.service.ConfigurationHome,
+	 * com.infinities.skyport.async.AsyncServiceProvider,
+	 * com.google.common.util.concurrent.ListeningScheduledExecutorService,
+	 * com.google.common.util.concurrent.ListeningExecutorService)
+	 */
+	@Override
+	public CachedServiceProvider getInstance(ConfigurationHome home, AsyncServiceProvider serviceProvider,
 			ListeningScheduledExecutorService scheduler, ListeningExecutorService worker) throws Exception {
 		CachedServiceProvider cachedServiceProvider = new DelegatedServiceProvider(serviceProvider);
 		return cachedServiceProvider;

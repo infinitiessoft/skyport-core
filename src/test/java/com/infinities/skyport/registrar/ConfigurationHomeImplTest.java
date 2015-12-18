@@ -42,9 +42,7 @@ import org.dasein.cloud.network.NetworkServices;
 import org.dasein.cloud.platform.PlatformServices;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
-import org.jmock.api.Invocation;
 import org.jmock.integration.junit4.JUnit4Mockery;
-import org.jmock.lib.action.CustomAction;
 import org.jmock.lib.concurrent.Synchroniser;
 import org.jmock.lib.legacy.ClassImposteriser;
 import org.junit.After;
@@ -52,10 +50,16 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import com.infinities.skyport.ServiceProvider;
+import com.infinities.skyport.async.AsyncServiceProvider;
+import com.infinities.skyport.async.impl.IAsyncServiceProviderFactory;
 import com.infinities.skyport.cache.CachedServiceProvider;
+import com.infinities.skyport.cache.impl.ICachedServiceProviderFactory;
 import com.infinities.skyport.model.Profile;
 import com.infinities.skyport.model.configuration.Configuration;
+import com.infinities.skyport.service.ConfigurationHome;
 import com.infinities.skyport.service.ConfigurationLifeCycleListener;
 import com.infinities.skyport.service.DriverHome;
 import com.infinities.skyport.service.ProfileHome;
@@ -76,7 +80,11 @@ public class ConfigurationHomeImplTest {
 
 	private Map<String, CachedServiceProvider> map;
 	private CachedServiceProvider serviceProvider;
+	private AsyncServiceProvider asyncServiceProvider;
 	private Configuration configuration = new Configuration();
+
+	private IAsyncServiceProviderFactory asyncFactory;
+	private ICachedServiceProviderFactory factory;
 
 
 	@SuppressWarnings("unchecked")
@@ -96,10 +104,16 @@ public class ConfigurationHomeImplTest {
 		driverHome = context.mock(DriverHome.class);
 		map = context.mock(Map.class);
 		serviceProvider = context.mock(CachedServiceProvider.class);
+		factory = context.mock(ICachedServiceProviderFactory.class);
+		asyncFactory = context.mock(IAsyncServiceProviderFactory.class);
+		asyncServiceProvider = context.mock(AsyncServiceProvider.class);
 		home = new ConfigurationHomeImpl();
 		home.setDriverHome(driverHome);
 		home.setProfileHome(profileHome);
 		home.registeredServiceProviders = map;
+		home.cachedServiceProviderFactory = factory;
+		home.delegatedServiceProviderFactory = factory;
+		home.asyncServiceProviderFactory = asyncFactory;
 		context.checking(new Expectations() {
 
 			{
@@ -141,94 +155,28 @@ public class ConfigurationHomeImplTest {
 			{
 				exactly(2).of(driverHome).findByName(configuration.getProviderClass());
 				will(returnValue(MockServiceProvider.class));
-
+				exactly(1).of(asyncFactory).getInstance(with(any(ConfigurationHome.class)),
+						with(any(ServiceProvider.class)), with(any(Configuration.class)),
+						with(any(ListeningScheduledExecutorService.class)));
+				will(returnValue(asyncServiceProvider));
+				exactly(1).of(factory).getInstance(with(any(ConfigurationHome.class)),
+						with(any(AsyncServiceProvider.class)), with(any(ListeningScheduledExecutorService.class)),
+						with(any(ListeningExecutorService.class)));
+				will(returnValue(serviceProvider));
+				exactly(1).of(serviceProvider).initialize();
 				exactly(1).of(map).entrySet();
 				will(returnValue(set));
-
 				exactly(1).of(map).keySet();
 				will(returnValue(keys));
-
-				exactly(2).of(map).values();
+				exactly(1).of(map).values();
 				will(returnValue(values));
-
-				exactly(1).of(map).put(with(any(String.class)), with(any(CachedServiceProvider.class)));
-
 				exactly(1).of(profileHome).get();
 				will(returnValue(profile));
-
 				exactly(1).of(profileHome).save();
+				exactly(1).of(map).put("id", serviceProvider);
 			}
 		});
-		home.persist(configuration);
-	}
-
-	@Test(expected = IllegalStateException.class)
-	public void testPersistAndCachedServiceProviderImplInitialized() throws Exception {
-		configuration.setCacheable(true);
-		final Set<Entry<String, CachedServiceProvider>> set = new HashSet<Entry<String, CachedServiceProvider>>();
-		final List<CachedServiceProvider> values = new ArrayList<CachedServiceProvider>();
-		final Set<String> keys = new HashSet<String>();
-
-		context.checking(new Expectations() {
-
-			{
-				exactly(2).of(driverHome).findByName(configuration.getProviderClass());
-				will(returnValue(MockServiceProvider.class));
-				exactly(1).of(map).entrySet();
-				will(returnValue(set));
-				exactly(1).of(map).keySet();
-				will(returnValue(keys));
-				exactly(2).of(map).values();
-				will(returnValue(values));
-				exactly(1).of(map).put(with(any(String.class)), with(any(CachedServiceProvider.class)));
-				will(new CustomAction("check persist") {
-
-					@Override
-					public Object invoke(Invocation invocation) throws Throwable {
-						CachedServiceProvider provider = (CachedServiceProvider) invocation.getParameter(1);
-						provider.initialize();
-						return null;
-					}
-				});
-
-				exactly(1).of(profileHome).get();
-				will(returnValue(profile));
-
-			}
-		});
-		home.persist(configuration);
-	}
-
-	@Test
-	public void testPersistWithCachedServiceProviderImpl() throws Exception {
-		configuration.setCacheable(true);
-		final Set<Entry<String, CachedServiceProvider>> set = new HashSet<Entry<String, CachedServiceProvider>>();
-		final List<CachedServiceProvider> values = new ArrayList<CachedServiceProvider>();
-		final Set<String> keys = new HashSet<String>();
-		context.checking(new Expectations() {
-
-			{
-				exactly(2).of(driverHome).findByName(configuration.getProviderClass());
-				will(returnValue(MockServiceProvider.class));
-
-				exactly(1).of(map).entrySet();
-				will(returnValue(set));
-
-				exactly(1).of(map).keySet();
-				will(returnValue(keys));
-
-				exactly(2).of(map).values();
-				will(returnValue(values));
-
-				exactly(1).of(map).put(with(any(String.class)), with(any(CachedServiceProvider.class)));
-
-				exactly(1).of(profileHome).save();
-
-				exactly(1).of(profileHome).get();
-				will(returnValue(profile));
-
-			}
-		});
+		configuration.setId("id");
 		home.persist(configuration);
 	}
 
@@ -336,30 +284,37 @@ public class ConfigurationHomeImplTest {
 		context.checking(new Expectations() {
 
 			{
-				exactly(2).of(map).values();
+				exactly(1).of(map).values();
 				will(returnValue(values));
-
 				exactly(2).of(provider).getConfiguration();
 				will(returnValue(oldConfiguration));
-
 				exactly(1).of(driverHome).findByName("Mock");
 				will(returnValue(MockServiceProvider.class));
-
 				exactly(1).of(map).get("id");
 				will(returnValue(provider));
-
 				exactly(1).of(map).entrySet();
 				will(returnValue(set));
-
 				exactly(1).of(map).put(with(any(String.class)), with(any(CachedServiceProvider.class)));
 				will(returnValue(null));
-
 				exactly(1).of(provider).close();
-
-				exactly(2).of(profileHome).get();
+				exactly(1).of(profileHome).get();
 				will(returnValue(profile));
-
 				exactly(1).of(profileHome).save();
+			}
+		});
+		context.checking(new Expectations() {
+
+			{
+				exactly(1).of(asyncFactory).getInstance(with(any(ConfigurationHome.class)),
+						with(any(ServiceProvider.class)), with(any(Configuration.class)),
+						with(any(ListeningScheduledExecutorService.class)));
+				will(returnValue(asyncServiceProvider));
+				exactly(1).of(factory).getInstance(with(any(ConfigurationHome.class)),
+						with(any(AsyncServiceProvider.class)), with(any(ListeningScheduledExecutorService.class)),
+						with(any(ListeningExecutorService.class)));
+				will(returnValue(serviceProvider));
+				exactly(1).of(serviceProvider).getConfiguration();
+				will(returnValue(configuration));
 			}
 		});
 		home.merge("id", configuration);
@@ -393,10 +348,13 @@ public class ConfigurationHomeImplTest {
 				exactly(1).of(map).put(with(any(String.class)), with(any(CachedServiceProvider.class)));
 				will(returnValue(null));
 
-				exactly(2).of(profileHome).get();
+				exactly(1).of(profileHome).get();
 				will(returnValue(profile));
 
 				exactly(1).of(profileHome).save();
+
+				exactly(1).of(provider).getConfiguration();
+				will(returnValue(oldConfiguration));
 			}
 		});
 		home.merge("id", configuration);
@@ -416,19 +374,16 @@ public class ConfigurationHomeImplTest {
 			{
 				exactly(1).of(map).get("id");
 				will(returnValue(provider));
-
 				exactly(1).of(provider).initialize();
-
 				exactly(1).of(map).entrySet();
 				will(returnValue(set));
-
 				exactly(1).of(map).put(with(any(String.class)), with(any(CachedServiceProvider.class)));
 				will(returnValue(null));
-
-				exactly(2).of(profileHome).get();
+				exactly(1).of(profileHome).get();
 				will(returnValue(profile));
-
 				exactly(1).of(profileHome).save();
+				exactly(1).of(provider).getConfiguration();
+				will(returnValue(oldConfiguration));
 			}
 		});
 		configuration.setStatus(true);
@@ -452,28 +407,35 @@ public class ConfigurationHomeImplTest {
 			{
 				exactly(1).of(map).get("id");
 				will(returnValue(provider));
-
 				exactly(1).of(map).entrySet();
 				will(returnValue(set));
-
 				exactly(1).of(map).put(with(any(String.class)), with(any(CachedServiceProvider.class)));
 				will(returnValue(null));
-
-				exactly(2).of(profileHome).get();
+				exactly(1).of(profileHome).get();
 				will(returnValue(profile));
-
 				exactly(1).of(profileHome).save();
-
 				exactly(1).of(provider).close();
-
 				exactly(1).of(driverHome).findByName(configuration.getProviderClass());
 				will(returnValue(MockServiceProvider.class));
-
-				exactly(2).of(map).values();
+				exactly(1).of(map).values();
 				will(returnValue(list));
-
 				exactly(2).of(provider).getConfiguration();
 				will(returnValue(oldConfiguration));
+			}
+		});
+		context.checking(new Expectations() {
+
+			{
+				exactly(1).of(asyncFactory).getInstance(with(any(ConfigurationHome.class)),
+						with(any(ServiceProvider.class)), with(any(Configuration.class)),
+						with(any(ListeningScheduledExecutorService.class)));
+				will(returnValue(asyncServiceProvider));
+				exactly(1).of(factory).getInstance(with(any(ConfigurationHome.class)),
+						with(any(AsyncServiceProvider.class)), with(any(ListeningScheduledExecutorService.class)),
+						with(any(ListeningExecutorService.class)));
+				will(returnValue(serviceProvider));
+				exactly(1).of(serviceProvider).getConfiguration();
+				will(returnValue(configuration));
 			}
 		});
 		configuration.setStatus(false);
@@ -505,13 +467,29 @@ public class ConfigurationHomeImplTest {
 				exactly(1).of(provider).close();
 				exactly(1).of(map).entrySet();
 				will(returnValue(set));
-				exactly(2).of(map).values();
+				exactly(1).of(map).values();
 				will(returnValue(list));
 				exactly(1).of(map).put(with(any(String.class)), with(any(CachedServiceProvider.class)));
 				will(returnValue(null));
-				exactly(2).of(profileHome).get();
+				exactly(1).of(profileHome).get();
 				will(returnValue(profile));
 				exactly(1).of(profileHome).save();
+			}
+		});
+		context.checking(new Expectations() {
+
+			{
+				exactly(1).of(asyncFactory).getInstance(with(any(ConfigurationHome.class)),
+						with(any(ServiceProvider.class)), with(any(Configuration.class)),
+						with(any(ListeningScheduledExecutorService.class)));
+				will(returnValue(asyncServiceProvider));
+				exactly(1).of(factory).getInstance(with(any(ConfigurationHome.class)),
+						with(any(AsyncServiceProvider.class)), with(any(ListeningScheduledExecutorService.class)),
+						with(any(ListeningExecutorService.class)));
+				will(returnValue(serviceProvider));
+				exactly(1).of(serviceProvider).getConfiguration();
+				will(returnValue(configuration));
+				exactly(1).of(serviceProvider).initialize();
 			}
 		});
 		configuration.setStatus(true);
@@ -544,13 +522,28 @@ public class ConfigurationHomeImplTest {
 				exactly(1).of(provider).close();
 				exactly(1).of(map).entrySet();
 				will(returnValue(set));
-				exactly(2).of(map).values();
+				exactly(1).of(map).values();
 				will(returnValue(list));
 				exactly(1).of(map).put(with(any(String.class)), with(any(CachedServiceProvider.class)));
 				will(returnValue(null));
-				exactly(2).of(profileHome).get();
+				exactly(1).of(profileHome).get();
 				will(returnValue(profile));
 				exactly(1).of(profileHome).save();
+			}
+		});
+		context.checking(new Expectations() {
+
+			{
+				exactly(1).of(asyncFactory).getInstance(with(any(ConfigurationHome.class)),
+						with(any(ServiceProvider.class)), with(any(Configuration.class)),
+						with(any(ListeningScheduledExecutorService.class)));
+				will(returnValue(asyncServiceProvider));
+				exactly(1).of(factory).getInstance(with(any(ConfigurationHome.class)),
+						with(any(AsyncServiceProvider.class)), with(any(ListeningScheduledExecutorService.class)),
+						with(any(ListeningExecutorService.class)));
+				will(returnValue(serviceProvider));
+				exactly(1).of(serviceProvider).getConfiguration();
+				will(returnValue(configuration));
 			}
 		});
 		home.merge("id", configuration);
@@ -587,14 +580,12 @@ public class ConfigurationHomeImplTest {
 				exactly(1).of(map).get("id");
 				will(returnValue(provider));
 
-				// exactly(1).of(provider).getConfiguration();
-				// will(returnValue(oldConfiguration));
+				exactly(1).of(provider).getConfiguration();
+				will(returnValue(oldConfiguration));
 
 				exactly(1).of(provider2).getConfiguration();
 				will(returnValue(oldConfiguration2));
 
-				exactly(1).of(profileHome).get();
-				will(returnValue(profile));
 			}
 		});
 		home.merge("id", configuration);
@@ -605,8 +596,8 @@ public class ConfigurationHomeImplTest {
 		context.checking(new Expectations() {
 
 			{
-				exactly(1).of(profileHome).get();
-				will(returnValue(profile));
+				exactly(1).of(map).get("id");
+				will(returnValue(null));
 			}
 		});
 		home.merge("id", configuration);
@@ -635,9 +626,6 @@ public class ConfigurationHomeImplTest {
 
 				exactly(1).of(map).get("id");
 				will(returnValue(null));
-
-				exactly(1).of(profileHome).get();
-				will(returnValue(profile));
 
 			}
 		});
@@ -669,13 +657,10 @@ public class ConfigurationHomeImplTest {
 			{
 				exactly(1).of(map).get("id");
 				will(returnValue(provider));
-
 				exactly(1).of(map).entrySet();
 				will(returnValue(set));
-
-				exactly(1).of(profileHome).get();
-				will(returnValue(profile));
-
+				exactly(1).of(provider).getConfiguration();
+				will(returnValue(oldConfiguration));
 			}
 		});
 
@@ -699,13 +684,10 @@ public class ConfigurationHomeImplTest {
 			{
 				exactly(1).of(map).get("id");
 				will(returnValue(provider));
-
 				exactly(1).of(map).entrySet();
 				will(returnValue(set));
-
-				exactly(1).of(profileHome).get();
-				will(returnValue(profile));
-
+				exactly(1).of(provider).getConfiguration();
+				will(returnValue(oldConfiguration));
 			}
 		});
 		configuration.getLongPoolConfig().setQueueCapacity(1);
@@ -729,16 +711,14 @@ public class ConfigurationHomeImplTest {
 			{
 				exactly(1).of(map).get("id");
 				will(returnValue(provider));
-
 				exactly(1).of(map).entrySet();
 				will(returnValue(set));
-
-				exactly(2).of(profileHome).get();
+				exactly(1).of(profileHome).get();
 				will(returnValue(profile));
-
 				exactly(1).of(map).put(with(any(String.class)), with(any(CachedServiceProvider.class)));
-
 				exactly(1).of(profileHome).save();
+				exactly(1).of(provider).getConfiguration();
+				will(returnValue(configuration));
 
 			}
 		});

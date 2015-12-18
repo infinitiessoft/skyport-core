@@ -49,9 +49,11 @@ import com.infinities.skyport.ServiceProvider;
 import com.infinities.skyport.ServiceProviderBuilder;
 import com.infinities.skyport.async.AsyncServiceProvider;
 import com.infinities.skyport.async.impl.AsyncServiceProviderFactory;
+import com.infinities.skyport.async.impl.IAsyncServiceProviderFactory;
 import com.infinities.skyport.cache.CachedServiceProvider;
 import com.infinities.skyport.cache.impl.CachedServiceProviderFactory;
 import com.infinities.skyport.cache.impl.DelegatedServiceProviderFactory;
+import com.infinities.skyport.cache.impl.ICachedServiceProviderFactory;
 import com.infinities.skyport.distributed.impl.hazelcast.hazeltask.core.concurrent.NamedThreadFactory;
 import com.infinities.skyport.model.Profile;
 import com.infinities.skyport.model.configuration.Configuration;
@@ -73,10 +75,10 @@ public class ConfigurationHomeImpl implements ConfigurationHome {
 	private final AtomicBoolean isInitialized = new AtomicBoolean(false);
 	protected List<ConfigurationLifeCycleListener> listeners = Lists.newCopyOnWriteArrayList();
 	protected Map<String, CachedServiceProvider> registeredServiceProviders = Maps.newLinkedHashMap();
-	protected AsyncServiceProviderFactory asyncServiceProviderFactory = new AsyncServiceProviderFactory();
+	protected IAsyncServiceProviderFactory asyncServiceProviderFactory = new AsyncServiceProviderFactory();
 	protected TimedServiceProviderFactory timedServiceProviderFactory = new TimedServiceProviderFactory();
-	protected CachedServiceProviderFactory cachedServiceProviderFactory = new CachedServiceProviderFactory();
-	protected DelegatedServiceProviderFactory delegatedServiceProviderFactory = new DelegatedServiceProviderFactory();
+	protected ICachedServiceProviderFactory cachedServiceProviderFactory = new CachedServiceProviderFactory();
+	protected ICachedServiceProviderFactory delegatedServiceProviderFactory = new DelegatedServiceProviderFactory();
 	protected File file; // for testing
 	protected File saveFile; // for testing
 	protected ListeningScheduledExecutorService scheduler;
@@ -274,15 +276,16 @@ public class ConfigurationHomeImpl implements ConfigurationHome {
 		if (clone.getTimeoutable()) {
 			serviceProvider = timedServiceProviderFactory.getInstance(this, serviceProvider, clone, worker);
 		}
-		AsyncServiceProvider asyncServiceProvider =
-				asyncServiceProviderFactory.getInstance(this, serviceProvider, clone, scheduler);
+		AsyncServiceProvider asyncServiceProvider = asyncServiceProviderFactory.getInstance(this, serviceProvider, clone,
+				scheduler);
 
 		CachedServiceProvider cachedServiceProvider = null;
 
 		if (clone.getCacheable()) {
 			cachedServiceProvider = cachedServiceProviderFactory.getInstance(this, asyncServiceProvider, scheduler, worker);
 		} else {
-			cachedServiceProvider = delegatedServiceProviderFactory.getInstance(asyncServiceProvider, scheduler, worker);
+			cachedServiceProvider = delegatedServiceProviderFactory.getInstance(this, asyncServiceProvider, scheduler,
+					worker);
 		}
 
 		if (clone.getStatus()) {
@@ -354,12 +357,10 @@ public class ConfigurationHomeImpl implements ConfigurationHome {
 		if (isInitialized.compareAndSet(false, true)) {
 			logger.debug("AccessConfigHomeService Activate");
 			logger.debug("AccessConfigHomeService load AccessConfigs");
-			this.worker =
-					MoreExecutors.listeningDecorator(Executors.newCachedThreadPool(new NamedThreadFactory("ordinary",
-							"Cache-Worker")));
-			this.scheduler =
-					MoreExecutors.listeningDecorator(Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory(
-							"ordinary", "Scheduler")));
+			this.worker = MoreExecutors.listeningDecorator(Executors.newCachedThreadPool(new NamedThreadFactory("ordinary",
+					"Cache-Worker")));
+			this.scheduler = MoreExecutors.listeningDecorator(Executors
+					.newSingleThreadScheduledExecutor(new NamedThreadFactory("ordinary", "Scheduler")));
 			// dispatcher = new EventBusSecondLevelDispatcher(new
 			// AsyncEventBus("eventbus", worker));
 			Profile profile = profileHome.get();
