@@ -18,14 +18,15 @@ package com.infinities.skyport.quartz.callable;
 import java.util.concurrent.Callable;
 
 import org.dasein.cloud.compute.VirtualMachine;
-import org.dasein.cloud.compute.VirtualMachineSupport;
+
+import com.infinities.skyport.compute.SkyportVirtualMachineSupport;
 
 public class VmCallable implements Callable<Iterable<VirtualMachine>> {
 
-	private VirtualMachineSupport support;
+	private SkyportVirtualMachineSupport support;
 
 
-	public VmCallable(VirtualMachineSupport support) {
+	public VmCallable(SkyportVirtualMachineSupport support) {
 		this.support = support;
 	}
 

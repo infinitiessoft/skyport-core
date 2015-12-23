@@ -21,9 +21,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 
-import org.dasein.cloud.compute.ComputeServices;
 import org.dasein.cloud.compute.VirtualMachine;
-import org.dasein.cloud.compute.VirtualMachineSupport;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
@@ -35,6 +33,8 @@ import org.junit.Test;
 
 import com.infinities.skyport.ServiceProvider;
 import com.infinities.skyport.async.AsyncServiceProvider.TaskType;
+import com.infinities.skyport.compute.SkyportComputeServices;
+import com.infinities.skyport.compute.SkyportVirtualMachineSupport;
 import com.infinities.skyport.entity.TaskEvent;
 import com.infinities.skyport.entity.TaskEventLog;
 import com.infinities.skyport.jpa.EntityManagerHelper;
@@ -62,8 +62,8 @@ public class AsyncTaskImplTest {
 	private String virtualMachineId = "virtualMachineId";
 	private String productId = "productId";
 	private String configurationId = "configurationId";
-	private ComputeServices computeServices;
-	private VirtualMachineSupport virtualMachineSupport;
+	private SkyportComputeServices computeServices;
+	private SkyportVirtualMachineSupport virtualMachineSupport;
 
 
 	@Before
@@ -74,8 +74,8 @@ public class AsyncTaskImplTest {
 		taskEventHome = context.mock(ITaskEventHome.class);
 		taskEventLogHome = context.mock(ITaskEventLogHome.class);
 		provider = context.mock(ServiceProvider.class);
-		computeServices = context.mock(ComputeServices.class);
-		virtualMachineSupport = context.mock(VirtualMachineSupport.class);
+		computeServices = context.mock(SkyportComputeServices.class);
+		virtualMachineSupport = context.mock(SkyportVirtualMachineSupport.class);
 		task = new AsyncTaskImpl();
 		type = TaskType.VirtualMachineSupport;
 		task.setServiceProvider(provider);
@@ -112,9 +112,9 @@ public class AsyncTaskImplTest {
 				will(returnValue(true));
 				exactly(1).of(factory).createEntityManager();
 				will(returnValue(entityManager));
-				exactly(1).of(provider).getComputeServices();
+				exactly(1).of(provider).getSkyportComputeServices();
 				will(returnValue(computeServices));
-				exactly(1).of(computeServices).getVirtualMachineSupport();
+				exactly(1).of(computeServices).getSkyportVirtualMachineSupport();
 				will(returnValue(virtualMachineSupport));
 				exactly(1).of(virtualMachineSupport).alterVirtualMachineProduct(virtualMachineId, productId);
 				will(returnValue(vm));

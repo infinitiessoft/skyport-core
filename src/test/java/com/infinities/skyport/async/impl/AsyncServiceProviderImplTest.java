@@ -29,8 +29,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import org.dasein.cloud.compute.ComputeServices;
-import org.dasein.cloud.dc.DataCenterServices;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
@@ -42,6 +40,7 @@ import org.junit.Test;
 
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import com.infinities.skyport.ServiceProvider;
+import com.infinities.skyport.compute.SkyportComputeServices;
 import com.infinities.skyport.entity.TaskEvent;
 import com.infinities.skyport.entity.TaskEventLog;
 import com.infinities.skyport.entity.TaskEventLog.Status;
@@ -64,14 +63,14 @@ public class AsyncServiceProviderImplTest {
 	private Configuration configuration;
 	private ListeningScheduledExecutorService scheduler;
 
-	private ComputeServices computeServices;
+	private SkyportComputeServices computeServices;
 	// private NetworkServices networkServices;
 	// private AdminServices adminServices;
 	// private CIServices ciServices;
 	// private IdentityServices identityServices;
 	// private PlatformServices platformServices;
 	// private StorageServices storageServices;
-	private DataCenterServices dataCenterServices;
+	// private DataCenterServices dataCenterServices;
 
 	protected ITaskEventHome taskEventHome;
 	protected ITaskEventLogHome taskEventLogHome;
@@ -114,14 +113,14 @@ public class AsyncServiceProviderImplTest {
 		EntityManagerHelper.factoryLocal.set(factory);
 
 		serviceProvider = context.mock(ServiceProvider.class);
-		computeServices = context.mock(ComputeServices.class);
+		computeServices = context.mock(SkyportComputeServices.class);
 		// networkServices = context.mock(NetworkServices.class);
 		// adminServices = context.mock(AdminServices.class);
 		// ciServices = context.mock(CIServices.class);
 		// identityServices = context.mock(IdentityServices.class);
 		// platformServices = context.mock(PlatformServices.class);
 		// storageServices = context.mock(StorageServices.class);
-		dataCenterServices = context.mock(DataCenterServices.class);
+		// dataCenterServices = context.mock(DataCenterServices.class);
 		configuration = new Configuration();
 		configuration.setId("id");
 		scheduler = context.mock(ListeningScheduledExecutorService.class);
@@ -317,7 +316,7 @@ public class AsyncServiceProviderImplTest {
 		context.checking(new Expectations() {
 
 			{
-				exactly(1).of(serviceProvider).getComputeServices();
+				exactly(1).of(serviceProvider).getSkyportComputeServices();
 				will(returnValue(computeServices));
 				exactly(1).of(serviceProvider).hasComputeServices();
 				will(returnValue(true));

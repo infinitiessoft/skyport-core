@@ -18,7 +18,6 @@ package com.infinities.skyport.quartz.callable;
 import static org.junit.Assert.assertEquals;
 
 import org.dasein.cloud.compute.VirtualMachine;
-import org.dasein.cloud.compute.VirtualMachineSupport;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
@@ -27,6 +26,8 @@ import org.jmock.lib.legacy.ClassImposteriser;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.infinities.skyport.compute.SkyportVirtualMachineSupport;
 
 public class VmCallableTest {
 
@@ -38,12 +39,12 @@ public class VmCallableTest {
 		}
 	};
 	private VmCallable callable;
-	private VirtualMachineSupport support;
+	private SkyportVirtualMachineSupport support;
 
 
 	@Before
 	public void setUp() throws Exception {
-		support = context.mock(VirtualMachineSupport.class);
+		support = context.mock(SkyportVirtualMachineSupport.class);
 		callable = new VmCallable(support);
 	}
 

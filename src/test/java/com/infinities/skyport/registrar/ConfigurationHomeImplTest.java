@@ -57,6 +57,7 @@ import com.infinities.skyport.async.AsyncServiceProvider;
 import com.infinities.skyport.async.impl.IAsyncServiceProviderFactory;
 import com.infinities.skyport.cache.CachedServiceProvider;
 import com.infinities.skyport.cache.impl.ICachedServiceProviderFactory;
+import com.infinities.skyport.compute.SkyportComputeServices;
 import com.infinities.skyport.model.Profile;
 import com.infinities.skyport.model.configuration.Configuration;
 import com.infinities.skyport.service.ConfigurationHome;
@@ -856,7 +857,7 @@ public class ConfigurationHomeImplTest {
 			}
 		};
 
-		private ComputeServices computeServices = context.mock(ComputeServices.class);
+		private SkyportComputeServices computeServices = context.mock(SkyportComputeServices.class);
 
 
 		public MockServiceProvider() {
@@ -915,7 +916,7 @@ public class ConfigurationHomeImplTest {
 		}
 
 		@Override
-		public ComputeServices getComputeServices() {
+		public SkyportComputeServices getSkyportComputeServices() {
 			return computeServices;
 		}
 
@@ -942,6 +943,16 @@ public class ConfigurationHomeImplTest {
 		@Override
 		public String testContext() {
 			return "testContext";
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.dasein.cloud.CloudProvider#getComputeServices()
+		 */
+		@Override
+		public ComputeServices getComputeServices() {
+			return null;
 		}
 
 	}

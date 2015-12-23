@@ -24,7 +24,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 
-import org.dasein.cloud.compute.ComputeServices;
 import org.dasein.cloud.compute.VirtualMachine;
 import org.dasein.cloud.compute.VirtualMachineSupport;
 import org.jmock.Expectations;
@@ -41,6 +40,8 @@ import com.infinities.skyport.ServiceProvider;
 import com.infinities.skyport.async.AsyncResult;
 import com.infinities.skyport.async.AsyncServiceProvider.TaskType;
 import com.infinities.skyport.async.service.compute.AsyncVirtualMachineSupport;
+import com.infinities.skyport.compute.SkyportComputeServices;
+import com.infinities.skyport.compute.SkyportVirtualMachineSupport;
 import com.infinities.skyport.distributed.DistributedExecutor;
 import com.infinities.skyport.distributed.DistributedThreadPool;
 import com.infinities.skyport.entity.TaskEvent;
@@ -70,8 +71,8 @@ public class AsyncHandlerTest {
 	private String configurationId;
 	private TaskType taskType;
 	private ServiceProvider provider;
-	private ComputeServices computeServices;
-	private VirtualMachineSupport virtualMachineSupport;
+	private SkyportComputeServices computeServices;
+	private SkyportVirtualMachineSupport virtualMachineSupport;
 	private DistributedThreadPool pools;
 	private DistributedExecutor executor;
 	private Config config;
@@ -89,8 +90,8 @@ public class AsyncHandlerTest {
 		taskEventHome = context.mock(ITaskEventHome.class);
 		taskEventLogHome = context.mock(ITaskEventLogHome.class);
 		provider = context.mock(ServiceProvider.class);
-		computeServices = context.mock(ComputeServices.class);
-		virtualMachineSupport = context.mock(VirtualMachineSupport.class);
+		computeServices = context.mock(SkyportComputeServices.class);
+		virtualMachineSupport = context.mock(SkyportVirtualMachineSupport.class);
 		pools = context.mock(DistributedThreadPool.class);
 		executor = context.mock(DistributedExecutor.class);
 		future = context.mock(ListenableFuture.class);
@@ -140,10 +141,10 @@ public class AsyncHandlerTest {
 		context.checking(new Expectations() {
 
 			{
-				oneOf(provider).getComputeServices();
+				oneOf(provider).getSkyportComputeServices();
 				will(returnValue(computeServices));
 
-				oneOf(computeServices).getVirtualMachineSupport();
+				oneOf(computeServices).getSkyportVirtualMachineSupport();
 				will(returnValue(virtualMachineSupport));
 
 				oneOf(taskEventHome).persist(event);
@@ -195,10 +196,10 @@ public class AsyncHandlerTest {
 		context.checking(new Expectations() {
 
 			{
-				oneOf(provider).getComputeServices();
+				oneOf(provider).getSkyportComputeServices();
 				will(returnValue(computeServices));
 
-				oneOf(computeServices).getVirtualMachineSupport();
+				oneOf(computeServices).getSkyportVirtualMachineSupport();
 				will(returnValue(virtualMachineSupport));
 
 				oneOf(taskEventHome).persist(event);
@@ -229,10 +230,10 @@ public class AsyncHandlerTest {
 		context.checking(new Expectations() {
 
 			{
-				oneOf(provider).getComputeServices();
+				oneOf(provider).getSkyportComputeServices();
 				will(returnValue(computeServices));
 
-				oneOf(computeServices).getVirtualMachineSupport();
+				oneOf(computeServices).getSkyportVirtualMachineSupport();
 				will(returnValue(virtualMachineSupport));
 
 			}

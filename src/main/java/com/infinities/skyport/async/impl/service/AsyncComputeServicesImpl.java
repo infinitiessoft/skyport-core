@@ -16,7 +16,6 @@
 package com.infinities.skyport.async.impl.service;
 
 import org.apache.commons.lang3.concurrent.ConcurrentException;
-import org.dasein.cloud.compute.ComputeServices;
 
 import com.google.common.reflect.Reflection;
 import com.infinities.skyport.ServiceProvider;
@@ -29,6 +28,7 @@ import com.infinities.skyport.async.service.compute.AsyncMachineImageSupport;
 import com.infinities.skyport.async.service.compute.AsyncSnapshotSupport;
 import com.infinities.skyport.async.service.compute.AsyncVirtualMachineSupport;
 import com.infinities.skyport.async.service.compute.AsyncVolumeSupport;
+import com.infinities.skyport.compute.SkyportComputeServices;
 import com.infinities.skyport.distributed.DistributedThreadPool;
 import com.infinities.skyport.model.configuration.service.ComputeConfiguration;
 
@@ -36,7 +36,7 @@ public class AsyncComputeServicesImpl implements AsyncComputeServices {
 
 	// private static final Logger logger =
 	// LoggerFactory.getLogger(AsyncComputeServicesImpl.class);
-	private final ComputeServices inner;
+	private final SkyportComputeServices inner;
 	private AsyncVirtualMachineSupport asyncVirtualMachineSupport;
 	private AsyncAffinityGroupSupport asyncAffinityGroupSupport;
 	private AsyncMachineImageSupport asyncMachineImageSupport;
@@ -47,38 +47,38 @@ public class AsyncComputeServicesImpl implements AsyncComputeServices {
 
 	public AsyncComputeServicesImpl(String configurationId, ServiceProvider inner, ComputeConfiguration configuration,
 			DistributedThreadPool threadPools) throws ConcurrentException {
-		this.inner = inner.getComputeServices();
+		this.inner = inner.getSkyportComputeServices();
 		if (this.inner.hasAffinityGroupSupport()) {
-			this.asyncAffinityGroupSupport =
-					Reflection.newProxy(AsyncAffinityGroupSupport.class,
-							new AsyncHandler(configurationId, TaskType.AffinityGroupSupport, inner, threadPools,
-									configuration.getAffinityGroupConfiguration()));
+			this.asyncAffinityGroupSupport = Reflection.newProxy(
+					AsyncAffinityGroupSupport.class,
+					new AsyncHandler(configurationId, TaskType.AffinityGroupSupport, inner, threadPools, configuration
+							.getAffinityGroupConfiguration()));
 		}
 		if (this.inner.hasVirtualMachineSupport()) {
-			this.asyncVirtualMachineSupport =
-					Reflection.newProxy(AsyncVirtualMachineSupport.class,
-							new AsyncHandler(configurationId, TaskType.VirtualMachineSupport, inner, threadPools,
-									configuration.getVirtualMachineConfiguration()));
+			this.asyncVirtualMachineSupport = Reflection.newProxy(
+					AsyncVirtualMachineSupport.class,
+					new AsyncHandler(configurationId, TaskType.VirtualMachineSupport, inner, threadPools, configuration
+							.getVirtualMachineConfiguration()));
 		}
 		if (this.inner.hasImageSupport()) {
-			this.asyncMachineImageSupport =
-					Reflection.newProxy(AsyncMachineImageSupport.class, new AsyncHandler(configurationId,
-							TaskType.MachineImageSupport, inner, threadPools, configuration.getMachineImageConfiguration()));
+			this.asyncMachineImageSupport = Reflection.newProxy(
+					AsyncMachineImageSupport.class,
+					new AsyncHandler(configurationId, TaskType.MachineImageSupport, inner, threadPools, configuration
+							.getMachineImageConfiguration()));
 		}
 		if (this.inner.hasSnapshotSupport()) {
-			this.asyncSnapshotSupport =
-					Reflection.newProxy(AsyncSnapshotSupport.class, new AsyncHandler(configurationId,
-							TaskType.SnapshotSupport, inner, threadPools, configuration.getSnapshotConfiguration()));
+			this.asyncSnapshotSupport = Reflection.newProxy(AsyncSnapshotSupport.class, new AsyncHandler(configurationId,
+					TaskType.SnapshotSupport, inner, threadPools, configuration.getSnapshotConfiguration()));
 		}
 		if (this.inner.hasVolumeSupport()) {
-			this.asyncVolumeSupport =
-					Reflection.newProxy(AsyncVolumeSupport.class, new AsyncHandler(configurationId, TaskType.VolumeSupport,
-							inner, threadPools, configuration.getSnapshotConfiguration()));
+			this.asyncVolumeSupport = Reflection.newProxy(AsyncVolumeSupport.class, new AsyncHandler(configurationId,
+					TaskType.VolumeSupport, inner, threadPools, configuration.getSnapshotConfiguration()));
 		}
 		if (this.inner.hasAutoScalingSupport()) {
-			this.asyncAutoScalingSupport =
-					Reflection.newProxy(AsyncAutoScalingSupport.class, new AsyncHandler(configurationId,
-							TaskType.AutoScalingSupport, inner, threadPools, configuration.getAutoScalingConfiguration()));
+			this.asyncAutoScalingSupport = Reflection.newProxy(
+					AsyncAutoScalingSupport.class,
+					new AsyncHandler(configurationId, TaskType.AutoScalingSupport, inner, threadPools, configuration
+							.getAutoScalingConfiguration()));
 		}
 
 	}

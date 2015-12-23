@@ -28,11 +28,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.infinities.skyport.MockServiceProvider;
 import com.infinities.skyport.async.impl.AsyncServiceProviderImpl;
 import com.infinities.skyport.cache.impl.CachedServiceProviderImpl;
 import com.infinities.skyport.cache.service.compute.CachedVirtualMachineSupport.CachedVirtualMachineListener;
 import com.infinities.skyport.distributed.impl.local.LocalExecutor;
+import com.infinities.skyport.mock.MockServiceProvider;
 import com.infinities.skyport.model.PoolSize;
 import com.infinities.skyport.model.configuration.Configuration;
 import com.infinities.skyport.registrar.ConfigurationHomeImpl;

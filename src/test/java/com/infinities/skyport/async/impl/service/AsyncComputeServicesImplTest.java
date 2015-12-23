@@ -16,7 +16,6 @@
 package com.infinities.skyport.async.impl.service;
 
 import org.apache.commons.lang3.concurrent.ConcurrentException;
-import org.dasein.cloud.compute.ComputeServices;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
@@ -27,6 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.infinities.skyport.ServiceProvider;
+import com.infinities.skyport.compute.SkyportComputeServices;
 import com.infinities.skyport.distributed.DistributedThreadPool;
 import com.infinities.skyport.model.configuration.service.ComputeConfiguration;
 
@@ -41,7 +41,7 @@ public class AsyncComputeServicesImplTest {
 	};
 	private DistributedThreadPool pools;
 	private ComputeConfiguration configuration;
-	private ComputeServices services;
+	private SkyportComputeServices services;
 	private String configurationId = "configurationId";
 	private ServiceProvider provider;
 
@@ -50,7 +50,7 @@ public class AsyncComputeServicesImplTest {
 	public void setUp() {
 		pools = context.mock(DistributedThreadPool.class);
 		provider = context.mock(ServiceProvider.class);
-		services = context.mock(ComputeServices.class);
+		services = context.mock(SkyportComputeServices.class);
 		configuration = new ComputeConfiguration();
 	}
 
@@ -64,7 +64,7 @@ public class AsyncComputeServicesImplTest {
 		context.checking(new Expectations() {
 
 			{
-				exactly(1).of(provider).getComputeServices();
+				exactly(1).of(provider).getSkyportComputeServices();
 				will(returnValue(services));
 
 				exactly(1).of(services).hasAffinityGroupSupport();
