@@ -48,6 +48,7 @@ public class AsyncTaskImpl implements AsyncTask<Object> {
 	private TaskType taskType;
 	private String methodName;
 	private Object[] args;
+	private Class<?>[] parameterTypes;
 	private transient ServiceProvider serviceProvider;
 	protected transient ITaskEventHome taskEventHome;
 	protected transient ITaskEventLogHome taskEventLogHome;
@@ -68,7 +69,7 @@ public class AsyncTaskImpl implements AsyncTask<Object> {
 		Object ret = null;
 		try {
 			Object support = TaskType.getSupport(taskType, serviceProvider);
-			final Method innerMethod = AsyncHandler.getMethod(support, methodName, args);
+			final Method innerMethod = AsyncHandler.getMethod(support, methodName, parameterTypes);
 			commitLog(Status.Executing, eventid, "Task executing", null);
 			ret = innerMethod.invoke(support, args);
 		} catch (TaskCancelledException e) {
@@ -130,6 +131,21 @@ public class AsyncTaskImpl implements AsyncTask<Object> {
 	@Override
 	public void setEventid(long eventid) {
 		this.eventid = eventid;
+	}
+
+	/**
+	 * @return the parameterTypes
+	 */
+	public Class<?>[] getParameterTypes() {
+		return parameterTypes;
+	}
+
+	/**
+	 * @param parameterTypes
+	 *            the parameterTypes to set
+	 */
+	public void setParameterTypes(Class<?>[] parameterTypes) {
+		this.parameterTypes = parameterTypes;
 	}
 
 	protected void commitLog(Status status, long eventid, String msg, Serializable detail) {

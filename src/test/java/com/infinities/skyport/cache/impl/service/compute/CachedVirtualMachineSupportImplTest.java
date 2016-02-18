@@ -197,7 +197,8 @@ public class CachedVirtualMachineSupportImplTest {
 						ComputeQuartzType type = (ComputeQuartzType) invocation.getParameter(0);
 						System.out.println("Type : " + type);
 						Object obj = invocation.getParameter(1);
-						QuartzConfiguration<Iterable<VirtualMachine>> config = (QuartzConfiguration<Iterable<VirtualMachine>>) obj;
+						QuartzConfiguration<Iterable<VirtualMachine>> config =
+								(QuartzConfiguration<Iterable<VirtualMachine>>) obj;
 						Assert.assertEquals(ComputeQuartzType.VirtualMachine, type);
 						Assert.assertEquals("Vm:" + configuration.getCloudName(), config.getName());
 						Assert.assertEquals(CachedServiceProviderImpl.INITIAL_DELAY, config.getInitialDelay());
@@ -235,8 +236,8 @@ public class CachedVirtualMachineSupportImplTest {
 					public Object invoke(Invocation invocation) throws Throwable {
 						ComputeQuartzType type = (ComputeQuartzType) invocation.getParameter(0);
 						System.out.println("Type : " + type);
-						QuartzConfiguration<Iterable<VirtualMachineProduct>> config = (QuartzConfiguration<Iterable<VirtualMachineProduct>>) invocation
-								.getParameter(1);
+						QuartzConfiguration<Iterable<VirtualMachineProduct>> config =
+								(QuartzConfiguration<Iterable<VirtualMachineProduct>>) invocation.getParameter(1);
 						Assert.assertEquals(ComputeQuartzType.VirtualMachineProduct, type);
 						Assert.assertEquals("VmProduct:" + configuration.getCloudName(), config.getName());
 						Assert.assertEquals(CachedServiceProviderImpl.INITIAL_DELAY, config.getInitialDelay());
@@ -253,8 +254,9 @@ public class CachedVirtualMachineSupportImplTest {
 			}
 		});
 
-		support = new CachedVirtualMachineSupportImpl(configurationHome, inner, configuration, quartz, typeMap, dispatcher,
-				objectFactory);
+		support =
+				new CachedVirtualMachineSupportImpl(configurationHome, inner, configuration, quartz, typeMap, dispatcher,
+						objectFactory);
 		support.initialize();
 	}
 
@@ -292,8 +294,8 @@ public class CachedVirtualMachineSupportImplTest {
 			}
 		});
 
-		AsyncResult<VirtualMachine> result = support.alterVirtualMachineProduct(vm.getProviderVirtualMachineId(),
-				product.getProviderProductId());
+		AsyncResult<VirtualMachine> result =
+				support.alterVirtualMachineProduct(vm.getProviderVirtualMachineId(), product.getProviderProductId());
 		Assert.assertEquals(vm.getProductId(), result.get().getProductId());
 
 	}
@@ -345,8 +347,8 @@ public class CachedVirtualMachineSupportImplTest {
 			}
 		});
 
-		AsyncResult<VirtualMachine> result = support.alterVirtualMachineFirewalls(vm.getProviderVirtualMachineId(),
-				firewalls);
+		AsyncResult<VirtualMachine> result =
+				support.alterVirtualMachineFirewalls(vm.getProviderVirtualMachineId(), firewalls);
 		assertEquals(ret, result);
 
 	}
@@ -374,8 +376,9 @@ public class CachedVirtualMachineSupportImplTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testLaunch() throws CloudException, InternalException, InterruptedException, ExecutionException {
-		final VMLaunchOptions options = VMLaunchOptions.getInstance("withStandardProductId", "usingMachineImageId",
-				"havingFriendlyName", "withDescription");
+		final VMLaunchOptions options =
+				VMLaunchOptions.getInstance("withStandardProductId", "usingMachineImageId", "havingFriendlyName",
+						"withDescription");
 		final AsyncResult<VirtualMachine> ret = context.mock(AsyncResult.class, "VirtualMachine");
 		context.checking(new Expectations() {
 
@@ -393,8 +396,9 @@ public class CachedVirtualMachineSupportImplTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testLaunchMany() throws CloudException, InternalException, InterruptedException, ExecutionException {
-		final VMLaunchOptions options = VMLaunchOptions.getInstance("withStandardProductId", "usingMachineImageId",
-				"havingFriendlyName", "withDescription");
+		final VMLaunchOptions options =
+				VMLaunchOptions.getInstance("withStandardProductId", "usingMachineImageId", "havingFriendlyName",
+						"withDescription");
 		final AsyncResult<Iterable<String>> ret = context.mock(AsyncResult.class, "Iterable<String>");
 		context.checking(new Expectations() {
 
@@ -646,8 +650,8 @@ public class CachedVirtualMachineSupportImplTest {
 				will(returnValue(products));
 			}
 		});
-		AsyncResult<Iterable<VirtualMachineProduct>> result = support.listProducts(VirtualMachineProductFilterOptions
-				.getInstance());
+		AsyncResult<Iterable<VirtualMachineProduct>> result =
+				support.listProducts(VirtualMachineProductFilterOptions.getInstance());
 		Iterable<VirtualMachineProduct> iterable = result.get();
 		Iterator<VirtualMachineProduct> iterator = iterable.iterator();
 		Assert.assertEquals(product, iterator.next());
@@ -835,8 +839,8 @@ public class CachedVirtualMachineSupportImplTest {
 
 					@Override
 					public Object invoke(Invocation invocation) throws Throwable {
-						Map<String, VirtualMachineProductProxy> productMap = (Map<String, VirtualMachineProductProxy>) invocation
-								.getParameter(0);
+						Map<String, VirtualMachineProductProxy> productMap =
+								(Map<String, VirtualMachineProductProxy>) invocation.getParameter(0);
 						Assert.assertEquals(1, productMap.size());
 						VirtualMachineProductProxy proxy = productMap.get(product.getProviderProductId());
 						Assert.assertEquals(product, proxy.getProduct());
@@ -855,8 +859,8 @@ public class CachedVirtualMachineSupportImplTest {
 
 					@Override
 					public Object invoke(Invocation invocation) throws Throwable {
-						VirtualMachineProductRefreshedEvent event = (VirtualMachineProductRefreshedEvent) invocation
-								.getParameter(0);
+						VirtualMachineProductRefreshedEvent event =
+								(VirtualMachineProductRefreshedEvent) invocation.getParameter(0);
 						Collection<VirtualMachineProduct> collection = event.getNewEntries();
 						Assert.assertEquals(configuration.getId(), event.getConfigid());
 						Assert.assertEquals(1, collection.size());
@@ -882,8 +886,8 @@ public class CachedVirtualMachineSupportImplTest {
 
 					@Override
 					public Object invoke(Invocation invocation) throws Throwable {
-						VirtualMachineProductFailureEvent event = (VirtualMachineProductFailureEvent) invocation
-								.getParameter(0);
+						VirtualMachineProductFailureEvent event =
+								(VirtualMachineProductFailureEvent) invocation.getParameter(0);
 						Assert.assertEquals(configuration.getId(), event.getConfigid());
 						Assert.assertEquals(e, event.getThrowable());
 						return null;

@@ -72,7 +72,7 @@ public class AsyncHandler extends AbstractInvocationHandler {
 		if ("getSupport".equals(method.getName()) && args.length == 0) {
 			return support;
 		}
-		final Method innerMethod = AsyncHandler.getMethod(support, method.getName(), args);
+		final Method innerMethod = AsyncHandler.getMethod(support, method.getName(), method.getParameterTypes());
 		PoolSize poolSize = PoolSize.SHORT;
 		String methodName = method.getName();
 
@@ -110,6 +110,7 @@ public class AsyncHandler extends AbstractInvocationHandler {
 		task.setMethodName(method.getName());
 		task.setServiceProvider(inner);
 		task.setTaskType(taskType);
+		task.setParameterTypes(method.getParameterTypes());
 
 		try {
 			ListenableFuture<Object> future = pool.submit(task);
@@ -166,16 +167,16 @@ public class AsyncHandler extends AbstractInvocationHandler {
 		}
 	}
 
-	protected static Method getMethod(Object support, String methodName, Object[] args) throws NoSuchMethodException,
-			SecurityException {
-		Class<?>[] parameterTypes = null;
-
-		if (args != null) {
-			parameterTypes = new Class<?>[args.length];
-			for (int i = 0; i < args.length; i++) {
-				parameterTypes[i] = args[i].getClass();
-			}
-		}
+	protected static Method getMethod(Object support, String methodName, Class<?>[] parameterTypes)
+			throws NoSuchMethodException, SecurityException {
+		// Class<?>[] parameterTypes = null;
+		//
+		// if (args != null) {
+		// parameterTypes = new Class<?>[args.length];
+		// for (int i = 0; i < args.length; i++) {
+		// parameterTypes[i] = args[i].getClass();
+		// }
+		// }
 		return support.getClass().getMethod(methodName, parameterTypes);
 	}
 }
