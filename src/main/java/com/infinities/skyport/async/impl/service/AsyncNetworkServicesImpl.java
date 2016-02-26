@@ -16,7 +16,6 @@
 package com.infinities.skyport.async.impl.service;
 
 import org.apache.commons.lang3.concurrent.ConcurrentException;
-import org.dasein.cloud.network.NetworkServices;
 
 import com.google.common.reflect.Reflection;
 import com.infinities.skyport.ServiceProvider;
@@ -32,10 +31,11 @@ import com.infinities.skyport.async.service.network.AsyncVLANSupport;
 import com.infinities.skyport.async.service.network.AsyncVpnSupport;
 import com.infinities.skyport.distributed.DistributedThreadPool;
 import com.infinities.skyport.model.configuration.service.NetworkConfiguration;
+import com.infinities.skyport.network.SkyportNetworkServices;
 
 public class AsyncNetworkServicesImpl implements AsyncNetworkServices {
 
-	private final NetworkServices inner;
+	private final SkyportNetworkServices inner;
 	private AsyncDNSSupport asyncDNSSupport;
 	private AsyncFirewallSupport asyncFirewallSupport;
 	private AsyncIpAddressSupport asyncIpAddressSupport;
@@ -47,7 +47,7 @@ public class AsyncNetworkServicesImpl implements AsyncNetworkServices {
 
 	public AsyncNetworkServicesImpl(String configurationId, ServiceProvider inner, NetworkConfiguration configuration,
 			DistributedThreadPool threadPools) throws ConcurrentException {
-		this.inner = inner.getNetworkServices();
+		this.inner = inner.getSkyportNetworkServices();
 		if (this.inner.hasDnsSupport()) {
 			this.asyncDNSSupport =
 					Reflection.newProxy(AsyncDNSSupport.class, new AsyncHandler(configurationId, TaskType.DNSSupport, inner,

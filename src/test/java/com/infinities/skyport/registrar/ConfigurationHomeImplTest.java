@@ -58,8 +58,10 @@ import com.infinities.skyport.async.impl.IAsyncServiceProviderFactory;
 import com.infinities.skyport.cache.CachedServiceProvider;
 import com.infinities.skyport.cache.impl.ICachedServiceProviderFactory;
 import com.infinities.skyport.compute.SkyportComputeServices;
+import com.infinities.skyport.dc.SkyportDataCenterServices;
 import com.infinities.skyport.model.Profile;
 import com.infinities.skyport.model.configuration.Configuration;
+import com.infinities.skyport.network.SkyportNetworkServices;
 import com.infinities.skyport.service.ConfigurationHome;
 import com.infinities.skyport.service.ConfigurationLifeCycleListener;
 import com.infinities.skyport.service.DriverHome;
@@ -906,7 +908,7 @@ public class ConfigurationHomeImplTest {
 		}
 
 		@Override
-		public DataCenterServices getDataCenterServices() {
+		public SkyportDataCenterServices getSkyportDataCenterServices() {
 			return null;
 		}
 
@@ -926,7 +928,7 @@ public class ConfigurationHomeImplTest {
 		}
 
 		@Override
-		public NetworkServices getNetworkServices() {
+		public SkyportNetworkServices getSkyportNetworkServices() {
 			return null;
 		}
 
@@ -952,6 +954,26 @@ public class ConfigurationHomeImplTest {
 		 */
 		@Override
 		public ComputeServices getComputeServices() {
+			return null;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.dasein.cloud.CloudProvider#getDataCenterServices()
+		 */
+		@Override
+		public DataCenterServices getDataCenterServices() {
+			return null;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.dasein.cloud.CloudProvider#getNetworkServices()
+		 */
+		@Override
+		public NetworkServices getNetworkServices() {
 			return null;
 		}
 

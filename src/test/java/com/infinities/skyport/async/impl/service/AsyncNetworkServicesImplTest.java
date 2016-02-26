@@ -16,7 +16,6 @@
 package com.infinities.skyport.async.impl.service;
 
 import org.apache.commons.lang3.concurrent.ConcurrentException;
-import org.dasein.cloud.network.NetworkServices;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
@@ -29,6 +28,7 @@ import org.junit.Test;
 import com.infinities.skyport.ServiceProvider;
 import com.infinities.skyport.distributed.DistributedThreadPool;
 import com.infinities.skyport.model.configuration.service.NetworkConfiguration;
+import com.infinities.skyport.network.SkyportNetworkServices;
 
 public class AsyncNetworkServicesImplTest {
 
@@ -41,7 +41,7 @@ public class AsyncNetworkServicesImplTest {
 	};
 	private DistributedThreadPool pools;
 	private NetworkConfiguration configuration;
-	private NetworkServices services;
+	private SkyportNetworkServices services;
 	private String configurationId = "configurationId";
 	private ServiceProvider provider;
 
@@ -50,7 +50,7 @@ public class AsyncNetworkServicesImplTest {
 	public void setUp() throws Exception {
 		pools = context.mock(DistributedThreadPool.class);
 		provider = context.mock(ServiceProvider.class);
-		services = context.mock(NetworkServices.class);
+		services = context.mock(SkyportNetworkServices.class);
 
 		configuration = new NetworkConfiguration();
 
@@ -66,7 +66,7 @@ public class AsyncNetworkServicesImplTest {
 		context.checking(new Expectations() {
 
 			{
-				exactly(1).of(provider).getNetworkServices();
+				exactly(1).of(provider).getSkyportNetworkServices();
 				will(returnValue(services));
 
 				exactly(1).of(services).hasDnsSupport();

@@ -46,7 +46,7 @@ public class AsyncDataCenterServicesImplLazyInitializer extends LazyInitializer<
 	@Override
 	protected AsyncDataCenterServices initialize() throws ConcurrentException {
 		try {
-			if (inner.getDataCenterServices() != null) {
+			if (inner.getSkyportDataCenterServices() != null) {
 				AsyncDataCenterServices services =
 						Reflection.newProxy(AsyncDataCenterServices.class, new AsyncHandler(configurationId,
 								TaskType.DataCenterServices, inner, threadPools, configuration));
