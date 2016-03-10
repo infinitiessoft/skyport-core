@@ -32,12 +32,14 @@ import com.infinities.skyport.async.service.AsyncAdminServices;
 import com.infinities.skyport.async.service.AsyncCIServices;
 import com.infinities.skyport.async.service.AsyncDataCenterServices;
 import com.infinities.skyport.async.service.AsyncIdentityServices;
-import com.infinities.skyport.async.service.AsyncNetworkServices;
 import com.infinities.skyport.async.service.AsyncPlatformServices;
-import com.infinities.skyport.async.service.AsyncStorageServices;
 import com.infinities.skyport.cache.CachedServiceProvider;
 import com.infinities.skyport.cache.impl.service.DelegatedComputeServices;
+import com.infinities.skyport.cache.impl.service.DelegatedNetworkServices;
+import com.infinities.skyport.cache.impl.service.DelegatedStorageServices;
 import com.infinities.skyport.cache.service.CachedComputeServices;
+import com.infinities.skyport.cache.service.CachedNetworkServices;
+import com.infinities.skyport.cache.service.CachedStorageServices;
 import com.infinities.skyport.distributed.DistributedObjectFactory;
 import com.infinities.skyport.distributed.util.DistributedUtil;
 import com.infinities.skyport.model.configuration.Configuration;
@@ -48,12 +50,19 @@ public class DelegatedServiceProvider implements CachedServiceProvider {
 	private final AtomicBoolean isInitialized = new AtomicBoolean(false);
 	private final AsyncServiceProvider inner;
 	private CachedComputeServices delegatedComputeServices;
-
+	private CachedNetworkServices delegatedNetworkServices;
+	private CachedStorageServices delegatedStorageServices;
 
 	public DelegatedServiceProvider(AsyncServiceProvider inner) throws ConcurrentException {
 		this.inner = inner;
 		if (inner.hasComputeServices()) {
 			this.delegatedComputeServices = new DelegatedComputeServices(inner.getComputeServices());
+		}
+		if (inner.hasNetworkServices()) {
+			this.delegatedNetworkServices = new DelegatedNetworkServices(inner.getNetworkServices());
+		}
+		if (inner.hasStorageServices()) {
+			this.delegatedStorageServices = new DelegatedStorageServices(inner.getStorageServices());
 		}
 	}
 
@@ -144,8 +153,8 @@ public class DelegatedServiceProvider implements CachedServiceProvider {
 	}
 
 	@Override
-	public AsyncStorageServices getStorageServices() throws ConcurrentException {
-		return inner.getStorageServices();
+	public CachedStorageServices getStorageServices() throws ConcurrentException {
+		return delegatedStorageServices;
 	}
 
 	@Override
@@ -169,8 +178,8 @@ public class DelegatedServiceProvider implements CachedServiceProvider {
 	}
 
 	@Override
-	public AsyncNetworkServices getNetworkServices() throws ConcurrentException {
-		return inner.getNetworkServices();
+	public CachedNetworkServices getNetworkServices() throws ConcurrentException {
+		return delegatedNetworkServices;
 	}
 
 	@Override

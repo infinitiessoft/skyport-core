@@ -35,12 +35,14 @@ import com.infinities.skyport.async.service.AsyncAdminServices;
 import com.infinities.skyport.async.service.AsyncCIServices;
 import com.infinities.skyport.async.service.AsyncDataCenterServices;
 import com.infinities.skyport.async.service.AsyncIdentityServices;
-import com.infinities.skyport.async.service.AsyncNetworkServices;
 import com.infinities.skyport.async.service.AsyncPlatformServices;
-import com.infinities.skyport.async.service.AsyncStorageServices;
 import com.infinities.skyport.cache.CachedServiceProvider;
 import com.infinities.skyport.cache.impl.service.concurrent.CachedComputeServicesImplLazyInitializer;
+import com.infinities.skyport.cache.impl.service.concurrent.CachedNetworkServicesImplLazyInitializer;
+import com.infinities.skyport.cache.impl.service.concurrent.CachedStorageServicesImplLazyInitializer;
 import com.infinities.skyport.cache.service.CachedComputeServices;
+import com.infinities.skyport.cache.service.CachedNetworkServices;
+import com.infinities.skyport.cache.service.CachedStorageServices;
 import com.infinities.skyport.distributed.DistributedObjectFactory;
 import com.infinities.skyport.distributed.util.DistributedUtil;
 import com.infinities.skyport.model.configuration.Configuration;
@@ -57,8 +59,9 @@ public class CachedServiceProviderImpl implements CachedServiceProvider {
 
 	private DistributedObjectFactory objectFactory;
 	protected CachedComputeServicesImplLazyInitializer cachedComputeServicesLazyInitializer;
-
-
+	protected CachedNetworkServicesImplLazyInitializer cachedNetworkServicesLazyInitializer;
+	protected CachedStorageServicesImplLazyInitializer cachedStorageServicesLazyInitializer;
+	
 	public CachedServiceProviderImpl(ConfigurationHome home, AsyncServiceProvider inner,
 			ListeningScheduledExecutorService scheduler, ListeningExecutorService worker) throws Exception {
 		this.inner = inner;
@@ -69,6 +72,12 @@ public class CachedServiceProviderImpl implements CachedServiceProvider {
 		cachedComputeServicesLazyInitializer =
 				new CachedComputeServicesImplLazyInitializer(home, inner, inner.getConfiguration(), scheduler, worker,
 						dispatcher, objectFactory);
+		cachedNetworkServicesLazyInitializer =
+				new CachedNetworkServicesImplLazyInitializer(home, inner, inner.getConfiguration(), scheduler, worker,
+						dispatcher, objectFactory);
+		cachedStorageServicesLazyInitializer =
+				new CachedStorageServicesImplLazyInitializer(home, inner, inner.getConfiguration(), scheduler, worker,
+						dispatcher, objectFactory);
 	}
 
 	@Override
@@ -76,6 +85,20 @@ public class CachedServiceProviderImpl implements CachedServiceProvider {
 		if (isInitialized.compareAndSet(true, false)) {
 			try {
 				this.cachedComputeServicesLazyInitializer.get().close();
+			} catch (NullPointerException e) {
+				// ignore
+			} catch (Exception e) {
+				logger.warn("close service failed", e);
+			}
+			try {
+				this.cachedNetworkServicesLazyInitializer.get().close();
+			} catch (NullPointerException e) {
+				// ignore
+			} catch (Exception e) {
+				logger.warn("close service failed", e);
+			}
+			try {
+				this.cachedStorageServicesLazyInitializer.get().close();
 			} catch (NullPointerException e) {
 				// ignore
 			} catch (Exception e) {
@@ -167,8 +190,8 @@ public class CachedServiceProviderImpl implements CachedServiceProvider {
 	}
 
 	@Override
-	public AsyncStorageServices getStorageServices() throws ConcurrentException {
-		return inner.getStorageServices();
+	public CachedStorageServices getStorageServices() throws ConcurrentException {
+		return cachedStorageServicesLazyInitializer.get();
 	}
 
 	@Override
@@ -197,8 +220,8 @@ public class CachedServiceProviderImpl implements CachedServiceProvider {
 	}
 
 	@Override
-	public AsyncNetworkServices getNetworkServices() throws ConcurrentException {
-		return inner.getNetworkServices();
+	public CachedNetworkServices getNetworkServices() throws ConcurrentException {
+		return cachedNetworkServicesLazyInitializer.get();
 	}
 
 	@Override
