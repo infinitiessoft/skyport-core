@@ -16,7 +16,6 @@
 package com.infinities.skyport.async.impl.service;
 
 import org.apache.commons.lang3.concurrent.ConcurrentException;
-import org.dasein.cloud.storage.StorageServices;
 
 import com.google.common.reflect.Reflection;
 import com.infinities.skyport.ServiceProvider;
@@ -27,17 +26,18 @@ import com.infinities.skyport.async.service.storage.AsyncBlobStoreSupport;
 import com.infinities.skyport.async.service.storage.AsyncOfflineStoreSupport;
 import com.infinities.skyport.distributed.DistributedThreadPool;
 import com.infinities.skyport.model.configuration.service.StorageConfiguration;
+import com.infinities.skyport.storage.SkyportStorageServices;
 
 public class AsyncStorageServicesImpl implements AsyncStorageServices {
 
-	private final StorageServices inner;
+	private final SkyportStorageServices inner;
 	private AsyncOfflineStoreSupport asyncOfflineStoreSupport;
 	private AsyncBlobStoreSupport asyncBlobStoreSupport;
 
 
 	public AsyncStorageServicesImpl(String configurationId, ServiceProvider inner, StorageConfiguration configuration,
 			DistributedThreadPool threadPools) throws ConcurrentException {
-		this.inner = inner.getStorageServices();
+		this.inner = inner.getSkyportStorageServices();
 		if (this.inner.hasOfflineStorageSupport()) {
 			this.asyncOfflineStoreSupport =
 					Reflection.newProxy(AsyncOfflineStoreSupport.class, new AsyncHandler(configurationId,
