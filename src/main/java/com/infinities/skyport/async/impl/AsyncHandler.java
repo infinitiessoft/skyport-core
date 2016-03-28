@@ -177,6 +177,11 @@ public class AsyncHandler extends AbstractInvocationHandler {
 		// parameterTypes[i] = args[i].getClass();
 		// }
 		// }
-		return support.getClass().getMethod(methodName, parameterTypes);
+		try {
+			return support.getClass().getMethod(methodName, parameterTypes);
+		} catch (NoSuchMethodException e) {
+			logger.error("class:{}, method:{}, args:{}", new Object[] { support.getClass(), methodName, parameterTypes });
+			throw e;
+		}
 	}
 }
